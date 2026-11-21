@@ -1,0 +1,368 @@
+<div class="min-h-screen bg-[#F5F5F5] flex flex-col md:flex-row font-sans">
+  <aside class="w-full md:w-64 bg-black text-white flex-shrink-0 flex flex-col justify-between p-6">
+    <div>
+      <div class="flex items-center gap-3 mb-8">
+        <img src="/logo.png" alt="Su4 Loj4" class="h-10 w-auto object-contain bg-white p-1" />
+      </div>
+
+      <nav class="space-y-1">
+        <button
+          (click)="trocarAba('dashboard')"
+          [class.bg-[#222222]]="abaAtiva() === 'dashboard'"
+          [class.text-[#4e802c]]="abaAtiva() === 'dashboard'"
+          class="w-full flex items-center gap-3 px-4 py-3 font-mono text-xs font-bold tracking-wider uppercase text-gray-300 hover:text-white hover:bg-[#222222] transition-colors text-left cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+          Dashboard
+        </button>
+
+        <button
+          (click)="trocarAba('estoque')"
+          [class.bg-[#222222]]="abaAtiva() === 'estoque'"
+          [class.text-[#4e802c]]="abaAtiva() === 'estoque'"
+          class="w-full flex items-center gap-3 px-4 py-3 font-mono text-xs font-bold tracking-wider uppercase text-gray-300 hover:text-white hover:bg-[#222222] transition-colors text-left cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+          </svg>
+          Produtos & Estoque
+        </button>
+      </nav>
+    </div>
+
+    <div class="pt-6 border-t border-gray-800 space-y-2">
+      <a
+        routerLink="/"
+        class="flex items-center gap-2 font-mono text-xs text-gray-400 hover:text-white px-4 py-2 transition-colors"
+      >
+        <span>← Voltar à Loja</span>
+      </a>
+
+      <button
+        (click)="sair()"
+        class="w-full flex items-center gap-2 font-mono text-xs text-red-400 hover:text-red-300 px-4 py-2 text-left cursor-pointer transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+        Sair do Painel
+      </button>
+    </div>
+  </aside>
+
+  <main class="flex-grow p-6 md:p-10 overflow-y-auto">
+    <div class="max-w-7xl mx-auto space-y-8">
+      @if (mensagem(); as msg) {
+        <div
+          [class.bg-[#4e802c]/10]="msg.tipo === 'sucesso'"
+          [class.border-[#4e802c]]="msg.tipo === 'sucesso'"
+          [class.text-[#4e802c]]="msg.tipo === 'sucesso'"
+          [class.bg-red-50]="msg.tipo === 'erro'"
+          [class.border-red-200]="msg.tipo === 'erro'"
+          [class.text-red-800]="msg.tipo === 'erro'"
+          class="p-4 border font-mono text-xs flex justify-between items-center"
+        >
+          <span>{{ msg.texto }}</span>
+          <button (click)="mensagem.set(null)" class="font-bold cursor-pointer">✕</button>
+        </div>
+      }
+
+      @if (abaAtiva() === 'dashboard') {
+        <div>
+          <span class="font-mono text-[10px] font-bold tracking-[0.25em] text-[#7A7A7A] uppercase block mb-1">
+            PAINEL
+          </span>
+          <h1 class="font-sans text-2xl md:text-3xl font-black uppercase text-black">
+            Visão Geral da Loja
+          </h1>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white border border-gray-200 p-6">
+            <span class="font-mono text-[10px] font-bold tracking-widest text-[#7A7A7A] uppercase block">TOTAL DE PRODUTOS</span>
+            <p class="font-sans text-3xl font-black text-black mt-2">{{ produtos().length }}</p>
+            <span class="font-mono text-[10px] text-gray-400 mt-1 block">Itens no catálogo</span>
+          </div>
+
+          <div class="bg-white border border-gray-200 p-6">
+            <span class="font-mono text-[10px] font-bold tracking-widest text-[#7A7A7A] uppercase block">UNIDADES EM ESTOQUE</span>
+            <p class="font-sans text-3xl font-black text-black mt-2">{{ totalEstoque() }}</p>
+            <span class="font-mono text-[10px] text-gray-400 mt-1 block">Volume total</span>
+          </div>
+
+          <div class="bg-white border border-gray-200 p-6" [class.border-red-300]="alertasBaixoEstoque().length > 0">
+            <span class="font-mono text-[10px] font-bold tracking-widest text-red-700 uppercase block">ESTOQUE EM BAIXA (≤ 5)</span>
+            <p class="font-sans text-3xl font-black text-red-600 mt-2">{{ alertasBaixoEstoque().length }}</p>
+            <span class="font-mono text-[10px] text-red-600 mt-1 block">Atenção para reposição</span>
+          </div>
+
+          <div class="bg-white border border-gray-200 p-6">
+            <span class="font-mono text-[10px] font-bold tracking-widest text-[#7A7A7A] uppercase block">TOTAL VENDIDO</span>
+            <p class="font-sans text-2xl font-black text-[#4e802c] mt-2">
+              {{ totalFaturadoCentavos() / 100 | currency: 'BRL' }}
+            </p>
+            <span class="font-mono text-[10px] text-gray-400 mt-1 block">{{ vendas().length }} vendas concluídas</span>
+          </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <h3 class="font-sans text-base font-bold uppercase tracking-tight text-black">
+              Controle de Estoque em Baixa
+            </h3>
+            <span class="font-mono text-xs text-gray-400">Itens com 5 unidades ou menos</span>
+          </div>
+
+          @if (alertasBaixoEstoque().length === 0) {
+            <div class="text-center py-8 text-gray-400 font-mono text-xs">
+              Todos os produtos estão com estoque regular (> 5 unidades).
+            </div>
+          } @else {
+            <div class="divide-y divide-gray-100">
+              @for (item of alertasBaixoEstoque(); track item.id) {
+                <div class="py-3 flex items-center justify-between gap-4">
+                  <div>
+                    <h4 class="font-sans text-sm font-bold text-black">{{ item.nome }}</h4>
+                    <p class="font-mono text-xs text-gray-400">ID: #{{ item.id }} | Preço: {{ item.precoCentavos / 100 | currency: 'BRL' }}</p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span
+                      [class.bg-red-100]="item.estoque === 0"
+                      [class.text-red-700]="item.estoque === 0"
+                      [class.bg-gray-100]="item.estoque > 0"
+                      [class.text-black]="item.estoque > 0"
+                      class="px-2.5 py-1 font-mono text-xs font-bold uppercase"
+                    >
+                      {{ item.estoque === 0 ? 'Esgotado' : item.estoque + ' restantes' }}
+                    </span>
+                    <button
+                      (click)="editar(item)"
+                      class="font-mono text-xs uppercase px-3 py-1.5 bg-black hover:bg-[#4e802c] text-white transition-colors cursor-pointer"
+                    >
+                      Repor
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="bg-white border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+            <h3 class="font-sans text-base font-bold uppercase tracking-tight text-black">
+              Histórico de Vendas
+            </h3>
+            <span class="font-mono text-xs text-gray-400">{{ vendas().length }} vendas registradas</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs">
+              <thead class="bg-[#F5F5F5] text-gray-600">
+                <tr>
+                  <th class="p-3">ID</th>
+                  <th class="p-3">Data</th>
+                  <th class="p-3">Itens</th>
+                  <th class="p-3">Subtotal</th>
+                  <th class="p-3">Desconto (5%)</th>
+                  <th class="p-3">Total</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                @for (v of vendas(); track v.id) {
+                  <tr>
+                    <td class="p-3 font-bold text-black">#{{ v.id.slice(0, 7) }}</td>
+                    <td class="p-3 text-gray-500">{{ v.criadoEm | date: 'dd/MM/yyyy HH:mm' }}</td>
+                    <td class="p-3">
+                      @for (item of v.itens; track item.produtoId) {
+                        <div>{{ item.quantidade }}x {{ item.nome }}</div>
+                      }
+                    </td>
+                    <td class="p-3 text-gray-600">{{ v.subtotalCentavos / 100 | currency: 'BRL' }}</td>
+                    <td class="p-3 text-[#4e802c] font-bold">
+                      {{ v.descontoCentavos > 0 ? ('- ' + (v.descontoCentavos / 100 | currency: 'BRL')) : 'R$ 0,00' }}
+                    </td>
+                    <td class="p-3 font-black text-black">{{ v.totalCentavos / 100 | currency: 'BRL' }}</td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="p-6 text-center text-gray-400">Nenhuma venda registrada até o momento.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+
+      @if (abaAtiva() === 'estoque') {
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="font-mono text-[10px] font-bold tracking-[0.25em] text-[#7A7A7A] uppercase block mb-1">
+              PRODUTOS
+            </span>
+            <h1 class="font-sans text-2xl md:text-3xl font-black uppercase text-black">
+              Controle de Estoque
+            </h1>
+          </div>
+
+          <button
+            (click)="abrirNovo()"
+            class="flex items-center gap-2 bg-black hover:bg-[#4e802c] text-white font-mono text-xs font-bold tracking-widest uppercase px-5 py-3 transition-colors cursor-pointer self-start sm:self-auto"
+          >
+            <span>+ Novo Produto</span>
+          </button>
+        </div>
+
+        @if (formularioAberto()) {
+          <div class="bg-white border border-gray-300 p-6 shadow-sm">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+              <h3 class="font-sans text-lg font-bold uppercase text-black">
+                {{ idEditando() === null ? 'Cadastrar Novo Produto' : 'Editar Produto' }}
+              </h3>
+              <button (click)="fecharFormulario()" class="font-mono text-xs text-gray-400 hover:text-black cursor-pointer">
+                Cancelar
+              </button>
+            </div>
+
+            <form (submit)="salvar(); $event.preventDefault()" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="sm:col-span-3 space-y-1">
+                <label class="block font-mono text-[10px] font-bold uppercase tracking-wider text-[#7A7A7A]">Nome do Produto</label>
+                <input
+                  type="text"
+                  required
+                  [(ngModel)]="nome"
+                  name="nome"
+                  placeholder="Ex: Arroz Branco 5kg"
+                  class="w-full bg-[#F5F5F5] border border-transparent focus:border-black focus:bg-white p-3 font-mono text-xs"
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label class="block font-mono text-[10px] font-bold uppercase tracking-wider text-[#7A7A7A]">Preço de Venda (R$)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  required
+                  [(ngModel)]="preco"
+                  name="preco"
+                  placeholder="0.00"
+                  class="w-full bg-[#F5F5F5] border border-transparent focus:border-black focus:bg-white p-3 font-mono text-xs"
+                />
+              </div>
+
+              <div class="space-y-1">
+                <label class="block font-mono text-[10px] font-bold uppercase tracking-wider text-[#7A7A7A]">Quantidade em Estoque</label>
+                <input
+                  type="number"
+                  min="0"
+                  required
+                  [(ngModel)]="estoque"
+                  name="estoque"
+                  placeholder="0"
+                  class="w-full bg-[#F5F5F5] border border-transparent focus:border-black focus:bg-white p-3 font-mono text-xs"
+                />
+              </div>
+
+              <div class="sm:col-span-3 flex gap-3 pt-2">
+                <button
+                  type="submit"
+                  class="bg-black hover:bg-[#4e802c] text-white font-mono text-xs font-bold tracking-widest uppercase px-6 py-3 transition-colors cursor-pointer"
+                >
+                  {{ idEditando() === null ? 'Salvar Produto' : 'Salvar Alterações' }}
+                </button>
+                <button
+                  type="button"
+                  (click)="fecharFormulario()"
+                  class="border border-gray-300 font-mono text-xs font-bold tracking-widest uppercase px-6 py-3 hover:bg-gray-100 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        }
+
+        <div class="bg-white border border-gray-200 p-6 space-y-4">
+          <div class="flex items-center gap-3 bg-[#F5F5F5] px-4 py-2 border border-transparent focus-within:border-black">
+            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input
+              type="text"
+              [ngModel]="busca()"
+              (ngModelChange)="busca.set($event)"
+              placeholder="Buscar por nome ou código..."
+              class="bg-transparent w-full font-mono text-xs focus:outline-none"
+            />
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs">
+              <thead class="bg-[#F5F5F5] text-gray-600">
+                <tr>
+                  <th class="p-3">ID</th>
+                  <th class="p-3">Nome</th>
+                  <th class="p-3">Preço</th>
+                  <th class="p-3">Estoque</th>
+                  <th class="p-3">Status</th>
+                  <th class="p-3 text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100">
+                @for (p of produtosFiltrados(); track p.id) {
+                  <tr>
+                    <td class="p-3 text-gray-400 font-bold">#{{ p.id.slice(0, 8) }}</td>
+                    <td class="p-3 font-sans text-sm font-bold text-black">{{ p.nome }}</td>
+                    <td class="p-3 text-black font-bold">{{ p.precoCentavos / 100 | currency: 'BRL' }}</td>
+                    <td class="p-3 font-bold">{{ p.estoque }} un</td>
+                    <td class="p-3">
+                      @if (p.estoque === 0) {
+                        <span class="px-2 py-0.5 bg-gray-200 text-gray-600 font-bold uppercase text-[10px]">Esgotado</span>
+                      } @else if (p.estoque <= 5) {
+                        <span class="px-2 py-0.5 bg-red-100 text-red-700 font-bold uppercase text-[10px]">Baixo</span>
+                      } @else {
+                        <span class="px-2 py-0.5 bg-[#4e802c]/10 text-[#4e802c] font-bold uppercase text-[10px]">Normal</span>
+                      }
+                    </td>
+                    <td class="p-3 text-right">
+                      <div class="flex items-center justify-end gap-2">
+                        <button
+                          (click)="editar(p)"
+                          title="Editar produto"
+                          class="p-1.5 text-gray-600 hover:text-black hover:bg-gray-100 border border-gray-200 transition-colors cursor-pointer"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                          </svg>
+                        </button>
+                        <button
+                          (click)="excluir(p)"
+                          title="Excluir produto"
+                          class="p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 border border-red-200 transition-colors cursor-pointer"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="6" class="p-8 text-center text-gray-400">
+                      Nenhum produto encontrado.
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+</div>

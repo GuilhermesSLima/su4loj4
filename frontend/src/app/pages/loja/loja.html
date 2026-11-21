@@ -1,0 +1,255 @@
+<div class="min-h-screen bg-white flex flex-col font-sans">
+  <header class="sticky top-0 z-30 bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <a routerLink="/" class="flex items-center gap-3">
+          <img src="/logo.png" alt="Su4 Loj4" class="h-12 w-auto object-contain" />
+        </a>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button
+          (click)="abrirCarrinho()"
+          class="flex items-center gap-2.5 bg-black hover:bg-[#4e802c] text-white font-mono text-xs font-bold tracking-widest uppercase py-2.5 px-4 transition-all duration-200 cursor-pointer"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <span>Carrinho</span>
+          <span class="bg-[#4e802c] text-white text-[10px] px-1.5 py-0.5 font-bold">
+            {{ carrinho.totalItens() }}
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="bg-black text-white py-10 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h1 class="font-sans text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
+        Su4 Loj4
+      </h1>
+      <p class="font-mono text-xs text-gray-300 mt-2">
+        Controle de estoque em tempo real e entrega rápida.
+      </p>
+    </div>
+  </section>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex-grow">
+    @if (erro()) {
+      <div class="mb-8 p-4 bg-red-50 border border-red-200 text-red-700 font-mono text-xs">
+        {{ erro() }}
+      </div>
+    }
+
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+      <div>
+        <h2 class="font-sans text-xl font-bold uppercase tracking-tight text-black">
+          Catálogo de Produtos
+        </h2>
+        <p class="font-mono text-xs text-gray-500 mt-1">
+          {{ produtos().length }} produtos disponíveis
+        </p>
+      </div>
+    </div>
+
+    @if (carregando()) {
+      <div class="text-center py-20">
+        <p class="font-mono text-xs uppercase tracking-widest text-gray-400">Carregando catálogo...</p>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (p of produtos(); track p.id) {
+          <div class="bg-white border border-gray-200 p-5 flex flex-col justify-between hover:border-black transition-colors duration-200">
+            <div>
+              <div class="h-36 bg-[#F5F5F5] mb-4 flex items-center justify-center border border-gray-100">
+                <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+              </div>
+
+              <h3 class="font-sans text-base font-bold text-black line-clamp-1 mb-1">
+                {{ p.nome }}
+              </h3>
+              <p class="font-sans text-lg font-black text-black mb-4">
+                {{ p.precoCentavos / 100 | currency: 'BRL' }}
+              </p>
+            </div>
+
+            <button
+              (click)="adicionarAoCarrinho(p)"
+              [disabled]="p.estoque === 0"
+              class="w-full py-2.5 font-mono text-xs font-bold tracking-wider uppercase transition-all duration-200 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed bg-black hover:bg-[#4e802c] text-white"
+            >
+              {{ p.estoque === 0 ? 'Esgotado' : 'Adicionar ao Carrinho' }}
+            </button>
+          </div>
+        } @empty {
+          <div class="col-span-full text-center py-16 bg-[#F5F5F5] border border-gray-200">
+            <p class="font-mono text-xs text-gray-500 uppercase tracking-widest">Nenhum produto cadastrado no momento.</p>
+          </div>
+        }
+      </div>
+    }
+  </main>
+
+  @if (carrinhoAberto()) {
+    <div class="fixed inset-0 z-50 overflow-hidden">
+      <div class="absolute inset-0 bg-black/50 transition-opacity" (click)="fecharCarrinho()"></div>
+
+      <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+        <div class="w-screen max-w-md bg-white border-l border-gray-200 flex flex-col justify-between shadow-2xl">
+          <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+            <div>
+              <span class="font-mono text-[10px] font-bold tracking-widest text-gray-400 uppercase">SUA SELEÇÃO</span>
+              <h3 class="font-sans text-xl font-black uppercase text-black">Carrinho</h3>
+            </div>
+            <button (click)="fecharCarrinho()" class="p-2 text-gray-400 hover:text-black cursor-pointer">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="p-6 overflow-y-auto flex-grow space-y-4">
+            @if (carrinho.itens().length === 0) {
+              <div class="text-center py-12">
+                <p class="font-mono text-xs uppercase tracking-widest text-gray-400">Seu carrinho está vazio.</p>
+              </div>
+            } @else {
+              @if (carrinho.temDesconto()) {
+                <div class="bg-[#4e802c]/10 border border-[#4e802c] p-3 text-xs font-mono text-[#4e802c] flex items-center justify-between">
+                  <span><strong>5% DE DESCONTO APLICADO</strong></span>
+                  <span>- {{ carrinho.descontoCentavos() / 100 | currency: 'BRL' }}</span>
+                </div>
+              } @else {
+                <div class="bg-[#F5F5F5] border border-gray-200 p-3 text-xs font-mono text-gray-600">
+                  Faltam <strong>{{ (20000 - carrinho.subtotalCentavos()) / 100 | currency: 'BRL' }}</strong> para aplicar o desconto de 5%.
+                </div>
+              }
+
+              @for (item of carrinho.itens(); track item.produto.id) {
+                <div class="border border-gray-200 p-4 flex items-center justify-between gap-3">
+                  <div class="flex-grow">
+                    <h4 class="font-sans text-sm font-bold text-black">{{ item.produto.nome }}</h4>
+                    <p class="font-mono text-xs text-gray-500">{{ item.produto.precoCentavos / 100 | currency: 'BRL' }}</p>
+                  </div>
+
+                  <div class="flex items-center gap-2">
+                    <button
+                      (click)="carrinho.atualizarQuantidade(item.produto.id, item.quantidade - 1)"
+                      class="w-7 h-7 border border-gray-300 font-mono text-sm flex items-center justify-center hover:bg-gray-100 cursor-pointer"
+                    >-</button>
+                    <span class="font-mono text-xs font-bold w-6 text-center">{{ item.quantidade }}</span>
+                    <button
+                      (click)="carrinho.atualizarQuantidade(item.produto.id, item.quantidade + 1)"
+                      class="w-7 h-7 border border-gray-300 font-mono text-sm flex items-center justify-center hover:bg-gray-100 cursor-pointer"
+                    >+</button>
+                  </div>
+
+                  <div class="text-right">
+                    <p class="font-mono text-xs font-bold text-black">
+                      {{ (item.produto.precoCentavos * item.quantidade) / 100 | currency: 'BRL' }}
+                    </p>
+                    <button
+                      (click)="carrinho.remover(item.produto.id)"
+                      class="text-[10px] font-mono text-red-600 uppercase underline mt-1 cursor-pointer"
+                    >Remover</button>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+
+          @if (carrinho.itens().length > 0) {
+            <div class="p-6 border-t border-gray-200 bg-[#F5F5F5] space-y-3">
+              <div class="flex justify-between font-mono text-xs text-gray-600">
+                <span>Subtotal:</span>
+                <span>{{ carrinho.subtotalCentavos() / 100 | currency: 'BRL' }}</span>
+              </div>
+
+              @if (carrinho.temDesconto()) {
+                <div class="flex justify-between font-mono text-xs text-[#4e802c] font-bold">
+                  <span>Desconto (5%):</span>
+                  <span>- {{ carrinho.descontoCentavos() / 100 | currency: 'BRL' }}</span>
+                </div>
+              }
+
+              <div class="flex justify-between font-sans text-base font-black text-black pt-2 border-t border-gray-300">
+                <span>Total:</span>
+                <span>{{ carrinho.totalCentavos() / 100 | currency: 'BRL' }}</span>
+              </div>
+
+              <button
+                (click)="finalizarCompra()"
+                [disabled]="finalizando()"
+                class="w-full py-3.5 bg-black hover:bg-[#4e802c] text-white font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer disabled:opacity-50"
+              >
+                {{ finalizando() ? 'Processando baixa de estoque...' : 'Finalizar Compra' }}
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (vendaFinalizada(); as v) {
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div class="bg-white max-w-lg w-full border border-gray-300 p-8 shadow-2xl">
+        <div class="text-center mb-6">
+          <div class="w-12 h-12 bg-[#4e802c]/10 text-[#4e802c] flex items-center justify-center mx-auto mb-3 font-bold text-lg">
+            ✓
+          </div>
+          <span class="font-mono text-[10px] font-bold tracking-widest text-gray-400 uppercase block">PEDIDO CONFIRMADO</span>
+          <h3 class="font-sans text-2xl font-black uppercase text-black">Compra Realizada</h3>
+          <p class="font-mono text-xs text-gray-500 mt-1">ID: #{{ v.id }}</p>
+        </div>
+
+        <div class="border-y border-gray-200 py-4 mb-6 space-y-2">
+          @for (item of v.itens; track item.produtoId) {
+            <div class="flex justify-between font-mono text-xs">
+              <span>{{ item.quantidade }}x {{ item.nome }}</span>
+              <span class="font-bold">{{ item.subtotalCentavos / 100 | currency: 'BRL' }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="space-y-1.5 font-mono text-xs mb-6">
+          <div class="flex justify-between text-gray-600">
+            <span>Subtotal:</span>
+            <span>{{ v.subtotalCentavos / 100 | currency: 'BRL' }}</span>
+          </div>
+          @if (v.descontoCentavos > 0) {
+            <div class="flex justify-between text-[#4e802c] font-bold">
+              <span>Desconto (5%):</span>
+              <span>- {{ v.descontoCentavos / 100 | currency: 'BRL' }}</span>
+            </div>
+          }
+          <div class="flex justify-between text-base font-black text-black pt-2 border-t border-gray-200">
+            <span>Total Pago:</span>
+            <span>{{ v.totalCentavos / 100 | currency: 'BRL' }}</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-[#4e802c]/10 border border-[#4e802c]/30 text-[#4e802c] font-mono text-xs mb-6">
+          ✓ Baixa de estoque confirmada no banco de dados.
+        </div>
+
+        <button
+          (click)="fecharRecibo()"
+          class="w-full py-3 bg-black hover:bg-[#4e802c] text-white font-mono text-xs font-bold tracking-widest uppercase transition-all duration-200 cursor-pointer"
+        >
+          Voltar às Compras
+        </button>
+      </div>
+    </div>
+  }
+
+  <footer class="bg-black text-white py-8 border-t border-gray-800 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between font-mono text-xs text-gray-400">
+      <span class="text-white font-bold">Su4 Loj4</span>
+      <span>Todos os direitos reservados</span>
+    </div>
+  </footer>
+</div>

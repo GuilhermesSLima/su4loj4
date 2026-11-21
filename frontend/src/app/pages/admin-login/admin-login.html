@@ -1,0 +1,90 @@
+<div class="min-h-screen bg-white flex flex-col font-sans">
+  <div class="flex-grow flex flex-col items-center justify-center px-4 py-12">
+    <div class="text-center mb-8 flex flex-col items-center">
+      <img src="/logo-vertical.jpg" alt="Su4 Loj4" class="h-28 w-auto object-contain mb-3" />
+      <p class="font-mono text-[11px] tracking-[0.35em] text-[#7A7A7A] uppercase">
+        ADMINISTRAÇÃO
+      </p>
+    </div>
+
+    <div class="w-full max-w-sm border border-gray-200 bg-white shadow-sm p-8 sm:p-10">
+      <div class="mb-8">
+        <h2 class="font-sans text-2xl font-bold text-black tracking-tight">
+          Acesso Admin
+        </h2>
+        <p class="mt-1.5 font-sans text-sm text-[#7A7A7A]">
+          Insira suas credenciais de acesso ao painel.
+        </p>
+      </div>
+
+      <form (submit)="entrar(); $event.preventDefault()" class="space-y-4">
+        <div class="space-y-1.5">
+          <label class="block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#7A7A7A]">
+            E-MAIL
+          </label>
+          <input
+            type="email"
+            required
+            [(ngModel)]="email"
+            name="email"
+            placeholder="admin@mercado.com"
+            class="w-full bg-[#F5F5F5] border border-transparent focus:border-black focus:bg-white focus:outline-none px-4 py-3 font-mono text-sm text-black transition-all"
+          />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#7A7A7A]">
+            CHAVE DE ACESSO
+          </label>
+          <div class="relative">
+            <input
+              [type]="mostrarSenha() ? 'text' : 'password'"
+              required
+              [(ngModel)]="chave"
+              name="chave"
+              placeholder="••••••••"
+              class="w-full bg-[#F5F5F5] border border-transparent focus:border-black focus:bg-white focus:outline-none px-4 py-3 pr-11 font-mono text-sm text-black transition-all"
+            />
+            <button
+              type="button"
+              (click)="toggleMostrarSenha()"
+              class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#7A7A7A] hover:text-black cursor-pointer"
+            >
+              @if (mostrarSenha()) {
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/>
+                </svg>
+              } @else {
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        @if (erro()) {
+          <div class="bg-red-50 border border-red-200 px-4 py-3">
+            <p class="font-mono text-[10px] text-red-600 uppercase tracking-wide">
+              ⚠ {{ erro() }}
+            </p>
+          </div>
+        }
+
+        <button
+          type="submit"
+          class="w-full bg-black hover:bg-[#4e802c] text-white font-mono text-xs font-bold tracking-widest uppercase py-3.5 transition-all duration-200 cursor-pointer mt-2"
+        >
+          Acessar Painel
+        </button>
+      </form>
+
+      <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+        <a routerLink="/" class="font-mono text-xs text-[#7A7A7A] hover:text-black underline">
+          ← Voltar para a Loja
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

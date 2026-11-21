@@ -1,0 +1,71 @@
+<div class="mx-auto max-w-3xl p-6">
+  <h1 class="mb-6 text-2xl font-bold">Teste do CRUD de produtos</h1>
+
+  @if (erro()) {
+    <div class="mb-4 rounded bg-red-100 p-3 text-red-700">{{ erro() }}</div>
+  }
+
+  <div class="mb-6 grid grid-cols-1 gap-3 rounded border p-4 sm:grid-cols-4">
+    <input
+      class="rounded border p-2 sm:col-span-2"
+      placeholder="Nome"
+      [(ngModel)]="nome"
+    />
+    <input
+      class="rounded border p-2"
+      type="number"
+      step="0.01"
+      placeholder="Preço (R$)"
+      [(ngModel)]="preco"
+    />
+    <input
+      class="rounded border p-2"
+      type="number"
+      placeholder="Estoque"
+      [(ngModel)]="estoque"
+    />
+
+    <div class="flex gap-2 sm:col-span-4">
+      <button
+        class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        (click)="salvar()"
+      >
+        {{ idEditando() === null ? 'Cadastrar' : 'Salvar alterações' }}
+      </button>
+
+      @if (idEditando() !== null) {
+        <button class="rounded border px-4 py-2" (click)="limpar()">Cancelar</button>
+      }
+    </div>
+  </div>
+
+  <table class="w-full border text-left">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="p-2">ID</th>
+        <th class="p-2">Nome</th>
+        <th class="p-2">Preço</th>
+        <th class="p-2">Estoque</th>
+        <th class="p-2">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (p of produtos(); track p.id) {
+        <tr class="border-t">
+          <td class="p-2">{{ p.id }}</td>
+          <td class="p-2">{{ p.nome }}</td>
+          <td class="p-2">{{ p.precoCentavos / 100 | currency: 'BRL' }}</td>
+          <td class="p-2">{{ p.estoque }}</td>
+          <td class="space-x-2 p-2">
+            <button class="text-blue-600 hover:underline" (click)="editar(p)">Editar</button>
+            <button class="text-red-600 hover:underline" (click)="excluir(p)">Excluir</button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td class="p-4 text-center text-gray-500" colspan="5">Nenhum produto cadastrado.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
